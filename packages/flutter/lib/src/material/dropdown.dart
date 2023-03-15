@@ -177,13 +177,14 @@ class _DropdownMenuItemButtonState<T> extends State<_DropdownMenuItemButton<T>> 
     );
     // An [InkWell] is added to the item only if it is enabled
     if (dropdownMenuItem.enabled) {
-      child = InkWell(
+      child = Shortcuts(shortcuts: <LogicalKeySet, Intent>{
+        LogicalKeySet(LogicalKeyboardKey.select): ActivateIntent(),}, child:InkWell(
         autofocus: widget.itemIndex == widget.route.selectedIndex,
         enableFeedback: widget.enableFeedback,
         onTap: _handleOnTap,
         onFocusChange: _handleFocusChange,
         child: child,
-      );
+      ));
     }
     child = FadeTransition(opacity: opacity, child: child);
     if (kIsWeb && dropdownMenuItem.enabled) {
