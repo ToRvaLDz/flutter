@@ -1041,8 +1041,8 @@ Dec 20 17:04:32 md32-11-vm1 Another App[88374]: Ignore this text'''
         cacheSkSL: true,
         purgePersistentCache: true,
         dartFlags: '--baz',
+        enableImpeller: ImpellerStatus.disabled,
         nullAssertions: true,
-        enableImpeller: true,
         hostVmServicePort: 0,
       );
 
@@ -1065,9 +1065,9 @@ Dec 20 17:04:32 md32-11-vm1 Another App[88374]: Ignore this text'''
         '--verbose-logging',
         '--cache-sksl',
         '--purge-persistent-cache',
+        '--enable-impeller=false',
         '--dart-flags=--baz,--null_assertions',
-        '--enable-impeller',
-        '--observatory-port=0',
+        '--vm-service-port=0',
       ]));
     }, overrides: <Type, Generator>{
       PlistParser: () => testPlistParser,
@@ -1204,7 +1204,7 @@ class FakeSimControl extends Fake implements SimControl {
 
   @override
   Future<RunResult> launch(String deviceId, String appIdentifier, [ List<String>? launchArgs ]) async {
-    requests.add(LaunchRequest(deviceId, appIdentifier, launchArgs));
+    requests.add(LaunchRequest(appIdentifier, launchArgs));
     return RunResult(ProcessResult(0, 0, '', ''), <String>['test']);
   }
 
@@ -1215,9 +1215,8 @@ class FakeSimControl extends Fake implements SimControl {
 }
 
 class LaunchRequest {
-  const LaunchRequest(this.deviceId, this.appIdentifier, this.launchArgs);
+  const LaunchRequest(this.appIdentifier, this.launchArgs);
 
-  final String deviceId;
   final String appIdentifier;
   final List<String>? launchArgs;
 }

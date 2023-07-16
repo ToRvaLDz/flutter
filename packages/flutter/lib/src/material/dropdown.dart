@@ -120,10 +120,8 @@ class _DropdownMenuItemButtonState<T> extends State<_DropdownMenuItemButton<T>> 
     switch (FocusManager.instance.highlightMode) {
       case FocusHighlightMode.touch:
         inTraditionalMode = false;
-        break;
       case FocusHighlightMode.traditional:
         inTraditionalMode = true;
-        break;
     }
 
     if (focused && inTraditionalMode) {
@@ -378,10 +376,8 @@ class _DropdownMenuRouteLayout<T> extends SingleChildLayoutDelegate {
     switch (textDirection!) {
       case TextDirection.rtl:
         left = clampDouble(buttonRect.right, 0.0, size.width) - childSize.width;
-        break;
       case TextDirection.ltr:
         left = clampDouble(buttonRect.left, 0.0, size.width - childSize.width);
-        break;
     }
 
     return Offset(left, menuLimits.top);
@@ -435,8 +431,7 @@ class _DropdownRoute<T> extends PopupRoute<_DropdownRouteResult<T>> {
     this.menuMaxHeight,
     required this.enableFeedback,
     this.borderRadius,
-  }) : assert(style != null),
-       itemHeights = List<double>.filled(items.length, itemHeight ?? kMinInteractiveDimension);
+  }) : itemHeights = List<double>.filled(items.length, itemHeight ?? kMinInteractiveDimension);
 
   final List<_MenuItem<T>> items;
   final EdgeInsetsGeometry padding;
@@ -665,7 +660,7 @@ class _MenuItem<T> extends SingleChildRenderObjectWidget {
     super.key,
     required this.onLayout,
     required this.item,
-  }) : assert(onLayout != null), super(child: item);
+  }) : super(child: item);
 
   final ValueChanged<Size> onLayout;
   final DropdownMenuItem<T>? item;
@@ -682,7 +677,7 @@ class _MenuItem<T> extends SingleChildRenderObjectWidget {
 }
 
 class _RenderMenuItem extends RenderProxyBox {
-  _RenderMenuItem(this.onLayout, [RenderBox? child]) : assert(onLayout != null), super(child);
+  _RenderMenuItem(this.onLayout, [RenderBox? child]) : super(child);
 
   ValueChanged<Size> onLayout;
 
@@ -704,7 +699,7 @@ class _DropdownMenuItemContainer extends StatelessWidget {
     super.key,
     this.alignment = AlignmentDirectional.centerStart,
     required this.child,
-  }) : assert(child != null);
+  });
 
   /// The widget below this widget in the tree.
   ///
@@ -748,7 +743,7 @@ class DropdownMenuItem<T> extends _DropdownMenuItemContainer {
     this.enabled = true,
     super.alignment,
     required super.child,
-  }) : assert(child != null);
+  });
 
   /// Called when the dropdown menu item is tapped.
   final VoidCallback? onTap;
@@ -776,7 +771,7 @@ class DropdownButtonHideUnderline extends InheritedWidget {
   const DropdownButtonHideUnderline({
     super.key,
     required super.child,
-  }) : assert(child != null);
+  });
 
   /// Returns whether the underline of [DropdownButton] widgets should
   /// be hidden.
@@ -794,6 +789,44 @@ class DropdownButtonHideUnderline extends InheritedWidget {
 /// shows the currently selected item as well as an arrow that opens a menu for
 /// selecting another item.
 ///
+/// ## Updating to [DropdownMenu]
+///
+/// There is a Material 3 version of this component,
+/// [DropdownMenu] that is preferred for applications that are configured
+/// for Material 3 (see [ThemeData.useMaterial3]).
+/// The [DropdownMenu] widget's visuals
+/// are a little bit different, see the Material 3 spec at
+/// <https://m3.material.io/components/menus/guidelines> for
+/// more details.
+///
+/// The [DropdownMenu] widget's API is also slightly different.
+/// To update from [DropdownButton] to [DropdownMenu], you will
+/// need to make the following changes:
+///
+/// 1. Instead of using [DropdownButton.items], which
+/// takes a list of [DropdownMenuItem]s, use
+/// [DropdownMenu.dropdownMenuEntries], which
+/// takes a list of [DropdownMenuEntry]'s.
+///
+/// 2. Instead of using [DropdownButton.onChanged],
+/// use [DropdownMenu.onSelected], which is also
+/// a callback that is called when the user selects an entry.
+///
+/// 3. In [DropdownMenu] it is not required to track
+/// the current selection in your app's state.
+/// So, instead of tracking the current selection in
+/// the [DropdownButton.value] property, you can set the
+/// [DropdownMenu.initialSelection] property to the
+/// item that should be selected before there is any user action.
+///
+/// 4. You may also need to make changes to the styling of the
+/// [DropdownMenu], see the properties in the [DropdownMenu]
+/// constructor for more details.
+///
+/// See the sample below for an example of migrating
+/// from [DropdownButton] to [DropdownMenu].
+///
+/// ## Using [DropdownButton]
 /// {@youtube 560 315 https://www.youtube.com/watch?v=ZzQ_PWrFihg}
 ///
 /// One ancestor must be a [Material] widget and typically this is
@@ -807,6 +840,7 @@ class DropdownButtonHideUnderline extends InheritedWidget {
 /// The [onChanged] callback should update a state variable that defines the
 /// dropdown's value. It should also call [State.setState] to rebuild the
 /// dropdown with the new value.
+///
 ///
 /// {@tool dartpad}
 /// This sample shows a [DropdownButton] with a large arrow icon,
@@ -825,9 +859,13 @@ class DropdownButtonHideUnderline extends InheritedWidget {
 /// [disabledHint] is null and [hint] is non-null, the [hint] widget will
 /// instead be displayed.
 ///
-/// Requires one of its ancestors to be a [Material] widget.
+/// {@tool dartpad}
+/// This sample shows how you would rewrite the above [DropdownButton]
+/// to use the [DropdownMenu].
 ///
-/// {@youtube 560 315 https://www.youtube.com/watch?v=ZzQ_PWrFihg}
+/// ** See code in examples/api/lib/material/dropdown_menu/dropdown_menu.1.dart **
+/// {@end-tool}
+///
 ///
 /// See also:
 ///
@@ -888,6 +926,7 @@ class DropdownButton<T> extends StatefulWidget {
     this.enableFeedback,
     this.alignment = AlignmentDirectional.centerStart,
     this.borderRadius,
+    this.padding,
     // When adding new arguments, consider adding similar arguments to
     // DropdownButtonFormField.
   }) : assert(items == null || items.isEmpty || value == null ||
@@ -899,11 +938,6 @@ class DropdownButton<T> extends StatefulWidget {
                 'Either zero or 2 or more [DropdownMenuItem]s were detected '
                 'with the same value',
               ),
-       assert(elevation != null),
-       assert(iconSize != null),
-       assert(isDense != null),
-       assert(isExpanded != null),
-       assert(autofocus != null),
        assert(itemHeight == null || itemHeight >=  kMinInteractiveDimension),
        _inputDecoration = null,
        _isEmpty = false,
@@ -936,6 +970,7 @@ class DropdownButton<T> extends StatefulWidget {
     this.enableFeedback,
     this.alignment = AlignmentDirectional.centerStart,
     this.borderRadius,
+    this.padding,
     required InputDecoration inputDecoration,
     required bool isEmpty,
     required bool isFocused,
@@ -948,14 +983,7 @@ class DropdownButton<T> extends StatefulWidget {
                 'Either zero or 2 or more [DropdownMenuItem]s were detected '
                 'with the same value',
               ),
-       assert(elevation != null),
-       assert(iconSize != null),
-       assert(isDense != null),
-       assert(isExpanded != null),
-       assert(autofocus != null),
        assert(itemHeight == null || itemHeight >=  kMinInteractiveDimension),
-       assert(isEmpty != null),
-       assert(isFocused != null),
        _inputDecoration = inputDecoration,
        _isEmpty = isEmpty,
        _isFocused = isFocused;
@@ -1129,6 +1157,17 @@ class DropdownButton<T> extends StatefulWidget {
   /// instead.
   final Color? dropdownColor;
 
+  /// Padding around the visible portion of the dropdown widget.
+  ///
+  /// As the padding increases, the size of the [DropdownButton] will also
+  /// increase. The padding is included in the clickable area of the dropdown
+  /// widget, so this can make the widget easier to click.
+  ///
+  /// Padding can be useful when used with a custom border. The clickable
+  /// area will stay flush with the border, as opposed to an external [Padding]
+  /// widget which will leave a non-clickable gap.
+  final EdgeInsetsGeometry? padding;
+
   /// The maximum height of the menu.
   ///
   /// The maximum height of the menu must be at least one row shorter than
@@ -1183,7 +1222,6 @@ class _DropdownButtonState<T> extends State<DropdownButton<T>> with WidgetsBindi
   Orientation? _lastOrientation;
   FocusNode? _internalNode;
   FocusNode? get focusNode => widget.focusNode ?? _internalNode;
-  bool _hasPrimaryFocus = false;
   late Map<Type, Action<Intent>> _actionMap;
 
   // Only used if needed to create _internalNode.
@@ -1206,14 +1244,12 @@ class _DropdownButtonState<T> extends State<DropdownButton<T>> with WidgetsBindi
         onInvoke: (ButtonActivateIntent intent) => _handleTap(),
       ),
     };
-    focusNode!.addListener(_handleFocusChanged);
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _removeDropdownRoute();
-    focusNode!.removeListener(_handleFocusChanged);
     _internalNode?.dispose();
     super.dispose();
   }
@@ -1224,25 +1260,11 @@ class _DropdownButtonState<T> extends State<DropdownButton<T>> with WidgetsBindi
     _lastOrientation = null;
   }
 
-  void _handleFocusChanged() {
-    if (_hasPrimaryFocus != focusNode!.hasPrimaryFocus) {
-      setState(() {
-        _hasPrimaryFocus = focusNode!.hasPrimaryFocus;
-      });
-    }
-  }
-
-
   @override
   void didUpdateWidget(DropdownButton<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.focusNode != oldWidget.focusNode) {
-      oldWidget.focusNode?.removeListener(_handleFocusChanged);
-      if (widget.focusNode == null) {
-        _internalNode ??= _createFocusNode();
-      }
-      _hasPrimaryFocus = focusNode!.hasPrimaryFocus;
-      focusNode!.addListener(_handleFocusChanged);
+    if (widget.focusNode == null) {
+      _internalNode ??= _createFocusNode();
     }
     _updateSelectedIndex();
   }
@@ -1334,7 +1356,7 @@ class _DropdownButtonState<T> extends State<DropdownButton<T>> with WidgetsBindi
   // Similarly, we don't reduce the height of the button so much that its icon
   // would be clipped.
   double get _denseButtonHeight {
-    final double textScaleFactor = MediaQuery.of(context).textScaleFactor;
+    final double textScaleFactor = MediaQuery.textScaleFactorOf(context);
     final double fontSize = _textStyle!.fontSize ?? Theme.of(context).textTheme.titleMedium!.fontSize!;
     final double scaledFontSize = textScaleFactor * fontSize;
     return math.max(scaledFontSize, math.max(widget.iconSize, _kDenseButtonHeight));
@@ -1370,11 +1392,11 @@ class _DropdownButtonState<T> extends State<DropdownButton<T>> with WidgetsBindi
   bool get _enabled => widget.items != null && widget.items!.isNotEmpty && widget.onChanged != null;
 
   Orientation _getOrientation(BuildContext context) {
-    Orientation? result = MediaQuery.maybeOf(context)?.orientation;
+    Orientation? result = MediaQuery.maybeOrientationOf(context);
     if (result == null) {
-      // If there's no MediaQuery, then use the window aspect to determine
+      // If there's no MediaQuery, then use the view aspect to determine
       // orientation.
-      final Size size = WidgetsBinding.instance.window.physicalSize;
+      final Size size = View.of(context).physicalSize;
       result = size.width > size.height ? Orientation.landscape : Orientation.portrait;
     }
     return result;
@@ -1408,7 +1430,6 @@ class _DropdownButtonState<T> extends State<DropdownButton<T>> with WidgetsBindi
       items.add(DefaultTextStyle(
         style: _textStyle!.copyWith(color: Theme.of(context).hintColor),
         child: IgnorePointer(
-          ignoringSemantics: false,
           child: _DropdownMenuItemContainer(
             alignment: widget.alignment,
             child: displayedHint,
@@ -1519,7 +1540,7 @@ class _DropdownButtonState<T> extends State<DropdownButton<T>> with WidgetsBindi
           autofocus: widget.autofocus,
           focusColor: widget.focusColor ?? Theme.of(context).focusColor,
           enableFeedback: false,
-          child: result,
+          child: widget.padding == null ? result : Padding(padding: widget.padding!, child: result),
         ),
       ),
     );
@@ -1531,7 +1552,7 @@ class _DropdownButtonState<T> extends State<DropdownButton<T>> with WidgetsBindi
 /// This is a convenience widget that wraps a [DropdownButton] widget in a
 /// [FormField].
 ///
-/// A [Form] ancestor is not required. The [Form] simply makes it easier to
+/// A [Form] ancestor is not required. The [Form] allows one to
 /// save, reset, or validate multiple fields at once. To use without a [Form],
 /// pass a [GlobalKey] to the constructor and use [GlobalKey.currentState] to
 /// save or reset the form field.
@@ -1580,6 +1601,7 @@ class DropdownButtonFormField<T> extends FormField<T> {
     bool? enableFeedback,
     AlignmentGeometry alignment = AlignmentDirectional.centerStart,
     BorderRadius? borderRadius,
+    EdgeInsetsGeometry? padding,
     // When adding new arguments, consider adding similar arguments to
     // DropdownButton.
   }) : assert(items == null || items.isEmpty || value == null ||
@@ -1591,12 +1613,7 @@ class DropdownButtonFormField<T> extends FormField<T> {
                 'Either zero or 2 or more [DropdownMenuItem]s were detected '
                 'with the same value',
               ),
-       assert(elevation != null),
-       assert(iconSize != null),
-       assert(isDense != null),
-       assert(isExpanded != null),
        assert(itemHeight == null || itemHeight >= kMinInteractiveDimension),
-       assert(autofocus != null),
        decoration = decoration ?? InputDecoration(focusColor: focusColor),
        super(
          initialValue: value,
@@ -1654,6 +1671,7 @@ class DropdownButtonFormField<T> extends FormField<T> {
                    inputDecoration: effectiveDecoration.copyWith(errorText: field.errorText),
                    isEmpty: isEmpty,
                    isFocused: Focus.of(context).hasFocus,
+                   padding: padding,
                  ),
                );
              }),
